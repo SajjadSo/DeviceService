@@ -1,0 +1,13 @@
+mode: set
+DeviceService\Test\GetDevice\main.go:18.89,21.14 2 1
+DeviceService\Test\GetDevice\main.go:26.2,43.16 6 1
+DeviceService\Test\GetDevice\main.go:48.2,48.27 1 1
+DeviceService\Test\GetDevice\main.go:53.2,56.76 2 1
+DeviceService\Test\GetDevice\main.go:61.2,62.16 2 1
+DeviceService\Test\GetDevice\main.go:66.2,66.54 1 1
+DeviceService\Test\GetDevice\main.go:21.14,23.3 1 1
+DeviceService\Test\GetDevice\main.go:43.16,45.3 1 0
+DeviceService\Test\GetDevice\main.go:48.27,50.3 1 1
+DeviceService\Test\GetDevice\main.go:56.76,58.3 1 0
+DeviceService\Test\GetDevice\main.go:62.16,64.3 1 0
+DeviceService\Test\GetDevice\main.go:69.13,71.2 1 0
