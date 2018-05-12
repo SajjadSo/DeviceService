@@ -15,6 +15,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
+// sess Global variable, holds initialized session value
+var sess *session.Session
+
+// DevicesTable Global variable, holds devices table name value
+var DevicesTable *string
+
 // CheckMissingFields function: check if any fields of request payload is missing
 func CheckMissingFields(PayloadJSON map[string]interface{}) error {
 	Flag := false
@@ -62,10 +68,6 @@ func BindPayloadToDevice(PayloadJSON map[string]interface{}) types.Device {
 
 // dbInsertDevice function: Insert request payload to database
 func dbInsertDevice(device types.Device) error {
-	// Initialize a session in AWS_REGION that the SDK will use to load
-	region := os.Getenv("AWS_REGION")
-	sess := session.Must(session.NewSession(&aws.Config{Region: &region}))
-
 	// Create DynamoDB client
 	db := mockDynamoDBClient{dynamodb.New(sess)}
 
@@ -76,7 +78,6 @@ func dbInsertDevice(device types.Device) error {
 	}
 
 	// Insert dbDevice into DevicesTable
-	DevicesTable := aws.String(os.Getenv("DEVICES_TABLE"))
 	_, err = db.PutItem(&dynamodb.PutItemInput{
 		Item:      dbDevice,
 		TableName: DevicesTable,
@@ -122,4 +123,13 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 func main() {
 	lambda.Start(Handler)
+}
+
+func init() {
+	// Initialize a session in AWS_REGION that the SDK will use to load
+	region := os.Getenv("AWS_REGION")
+	sess = session.Must(session.NewSession(&aws.Config{Region: &region}))
+
+	// Get Devices table name
+	DevicesTable = aws.String(os.Getenv("DEVICES_TABLE"))
 }

@@ -85,6 +85,12 @@ import (
         "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
+// sess Global variable, holds initialized session value
+var sess *session.Session
+
+// DevicesTable Global variable, holds devices table name value
+var DevicesTable *string
+
 // CheckMissingFields function: check if any fields of request payload is missing
 func CheckMissingFields(PayloadJSON map[string]interface{}) error <span class="cov8" title="1">{
         Flag := false
@@ -132,10 +138,6 @@ func BindPayloadToDevice(PayloadJSON map[string]interface{}) types.Device <span 
 
 // dbInsertDevice function: Insert request payload to database
 func dbInsertDevice(device types.Device) error <span class="cov8" title="1">{
-        // Initialize a session in AWS_REGION that the SDK will use to load
-        region := os.Getenv("AWS_REGION")
-        sess := session.Must(session.NewSession(&amp;aws.Config{Region: &amp;region}))
-
         // Create DynamoDB client
         db := mockDynamoDBClient{dynamodb.New(sess)}
 
@@ -146,8 +148,7 @@ func dbInsertDevice(device types.Device) error <span class="cov8" title="1">{
         }</span>
 
         // Insert dbDevice into DevicesTable
-        <span class="cov8" title="1">DevicesTable := aws.String(os.Getenv("DEVICES_TABLE"))
-        _, err = db.PutItem(&amp;dynamodb.PutItemInput{
+        <span class="cov8" title="1">_, err = db.PutItem(&amp;dynamodb.PutItemInput{
                 Item:      dbDevice,
                 TableName: DevicesTable,
         })
@@ -192,6 +193,15 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 func main() <span class="cov0" title="0">{
         lambda.Start(Handler)
+}</span>
+
+func init() <span class="cov8" title="1">{
+        // Initialize a session in AWS_REGION that the SDK will use to load
+        region := os.Getenv("AWS_REGION")
+        sess = session.Must(session.NewSession(&amp;aws.Config{Region: &amp;region}))
+
+        // Get Devices table name
+        DevicesTable = aws.String(os.Getenv("DEVICES_TABLE"))
 }</span>
 </pre>
 		
