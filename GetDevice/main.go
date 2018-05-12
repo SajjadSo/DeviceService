@@ -14,6 +14,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
+// sess Global variable, holds initialized session value
+var sess *session.Session
+
+// DevicesTable Global variable, holds devices table name value
+var DevicesTable *string
+
 // Handler function: Get user input parameter and returns a specific device if exists
 func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Get request id, and check if id is valid
@@ -22,15 +28,10 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		return responses.ErrNotFound(), nil
 	}
 
-	// Initialize a session in AWS_REGION that the SDK will use to load
-	region := os.Getenv("AWS_REGION")
-	sess := session.Must(session.NewSession(&aws.Config{Region: &region}))
-
 	// Create DynamoDB client
 	db := dynamodb.New(sess)
 
 	// Get dbDevice from DevicesTable
-	DevicesTable := aws.String(os.Getenv("DEVICES_TABLE"))
 	result, err := db.GetItem(&dynamodb.GetItemInput{
 		TableName: DevicesTable,
 		Key: map[string]*dynamodb.AttributeValue{
@@ -68,4 +69,13 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 
 func main() {
 	lambda.Start(Handler)
+}
+
+func init() {
+	// Initialize a session in AWS_REGION that the SDK will use to load
+	region := os.Getenv("AWS_REGION")
+	sess = session.Must(session.NewSession(&aws.Config{Region: &region}))
+
+	// Get Devices table name
+	DevicesTable = aws.String(os.Getenv("DEVICES_TABLE"))
 }
